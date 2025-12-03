@@ -14,15 +14,33 @@ include_directories(inc lib/glfw/include lib/glad/include ${OPENGL_INCLUDE_DIR})
 
 file(GLOB_RECURSE FLGL_SOURCES "src/*.cpp")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wextra -Wpedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-variable -Werror=unused-variable")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcast-qual")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wc99-extensions -Werror=c99-extensions -Wvla-extension -Werror=vla-extension")
+if(MSVC)
+    # /W4       - Enable high warning level (closest to -Wall -Wextra)
+    # /permissive- - Enforce standards conformance (closest to -pedantic)
+    # /we4715   - Error: Not all control paths return a value (return-type)
+    # /we4189   - Error: Local variable is initialized but not referenced (unused-variable)
+    # /we4101   - Error: Local variable is unreferenced (unused-variable)
+	# /wd4201   - Suppress "nameless struct/union" warning (Required for GLM) actually crazy that this isn't std..
+    add_compile_options(/W4 /permissive- /we4715 /we4189 /we4101 /wd4201)
+else()
+    # Your existing GCC/Clang flags
+    add_compile_options(
+        -Wall -Wextra -Wpedantic
+        -Wunused-variable -Werror=unused-variable
+        -Wcast-qual
+        -Werror=return-type
+    )
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(
+            -Wc99-extensions -Werror=c99-extensions 
+            -Wvla-extension -Werror=vla-extension
+        )
+    endif()
 endif()
 
 add_library(${PROJECT_NAME} ${FLGL_SOURCES})
+target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE) # hopefull fixes missing include on windows
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENGL_gl_LIBRARY})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw/include)
 

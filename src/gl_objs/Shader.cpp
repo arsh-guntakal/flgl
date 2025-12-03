@@ -6,7 +6,7 @@
 //
 //
 
-#define GLFW_INCLUDE_GLCOREARB
+//#define GLFW_INCLUDE_GLCOREARB
 #define GL_SILENCE_DEPRECATION
 #include <sstream>
 #include "Shader.h"

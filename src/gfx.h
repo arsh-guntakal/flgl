@@ -2,7 +2,7 @@
 #define gfx_h
 
 #define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_GLCOREARB
+//#define GLFW_INCLUDE_GLCOREARB
 
 #ifndef  __APPLE__
 	#include <glad/glad.h>
